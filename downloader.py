@@ -70,7 +70,7 @@ class Downloader:
         if num_retries > 0 and 500 <= resp.status_code < 600:
             return self.download(url, headers, num_retries-1, proxy)
 
-        return {'html': html, 'code': code, 'timestamp':str(datetime.utcnow())}
+        return {'html': html, 'code': code, 'timestamp': datetime.utcnow()}
 
 
 

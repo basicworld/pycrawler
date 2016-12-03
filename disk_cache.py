@@ -40,6 +40,7 @@ class DiskCache:
                 result['timestamp'] = datetime.strptime(result['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
                 # 过期返回错误
                 if self.has_expired(result['timestamp']):
+                    print url, 'expired'
                     raise KeyError(url + 'has expired')
                 else:
                     result['html'] = zlib.decompress(a2b_hex(result['html']))
@@ -60,10 +61,14 @@ class DiskCache:
 
 
         result['html'] = hexlify(zlib.compress(result['html']))
+        result['timestamp'] = str(result['timestamp']
+)
         with open(path, 'wb') as f:
             json.dump(result, f)
         # 下面保证result的数据没有被改变，否则会在调用的时候出错，莫名其妙的错误
         result['html'] = zlib.decompress(a2b_hex(result['html']))
+        result['timestamp'] = datetime.strptime(result['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
+
 
 
     def __delitem__(self, url):
@@ -78,7 +83,7 @@ class DiskCache:
         return os.path.realpath(os.path.join(self.cache_dir, md5url))
 
     def has_expired(self, timestamp):
-        return datetime.utcnow() > timestamp + self.expires
+        return datetime.utcnow() > (timestamp + self.expires)
 
     def clear(self):
         """
@@ -89,5 +94,6 @@ class DiskCache:
 
 
 if __name__ == '__main__':
+    from datetime import timedelta
     link_crawler('http://example.webscraping.com/', delay=3, link_regex='/(index|view)',
-                 max_urls=-1, cache=DiskCache())
+                 max_urls=-1, cache=DiskCache(expires=timedelta(hours=1)))
