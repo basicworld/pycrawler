@@ -22,4 +22,4 @@ def test(max_threads):
                      max_threads=max_threads, timeout=5)
 
 if __name__ == '__main__':
-    test(10)
+    test(8)

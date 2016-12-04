@@ -16,7 +16,7 @@ import time
 
 class MongoCache:
     def __init__(self, client=None, expires=timedelta(days=30)):
-        self.client = client or MongoClient()
+        self.client = client or MongoClient(connect=False)
 
         # 使用cache作为缓存的collection
         self.db = self.client.cache

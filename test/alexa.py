@@ -44,6 +44,7 @@ class AlaxeCallback:
         urls = tree.xpath('//p[@class="desc-paragraph"]/a/text()')
         urls = ['http://www.%s' % x.lower() for x in urls]
         self.total_urls.extend(urls)
+        # print self.total_urls
 
         return (urls if self.is_url_parse_allowed(url) else [])
 
