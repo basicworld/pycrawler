@@ -1,0 +1,6 @@
+.google.
+.twitter.
+.facebook.
+.youtube.
+.instagram.
+.wikipedia.

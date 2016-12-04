@@ -14,7 +14,8 @@ get_links = lambda html: etree.HTML(html).xpath('//a/@href')
 
 
 def link_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1, user_agent='Safari',
-                proxies=None, num_retries=1, scrape_callback=None, cache=None, robots_url=None):
+                proxies=None, num_retries=1, scrape_callback=None, cache=None, robots_url=None,
+                only_same_host=True, **kwargs):
     """
     根据给定seed_url递归爬取数据
     robots_url: 给出robotsurl 则遵守robot规则，否则不遵守
@@ -25,7 +26,8 @@ def link_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1, 
     rp = get_robots(robots_url)  # robots.txt规则
     # 定义下载器
     D = Downloader(delay=delay, user_agent=user_agent, proxies=proxies, num_retries=num_retries,
-                   cache=cache)
+                   cache=cache, save_cache=kwargs.get('save_cache', True),
+                   timeout=kwargs.get('timeout', 60))
     while crawl_queue:
         url = crawl_queue.pop()
         depth = seen[url]
@@ -38,14 +40,16 @@ def link_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1, 
                 # 匹配符合条件的link
                 if link_regex:
                     links.extend(link for link in get_links(html) if re.match(link_regex, link))
-
                 # 将符合条件的link加入下载队列
                 for link in links:
                     link = normalize(seed_url, link)
                     if link not in seen:
                         seen[link] = depth + 1
-                        if same_host(seed_url, link):
+                        if only_same_host and same_host(seed_url, link):
                             crawl_queue.append(link)
+                        elif not only_same_host:
+                            crawl_queue.append(link)
+
 
             num_urls += 1
             # 达到最大爬虫数则停止
