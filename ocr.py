@@ -8,12 +8,12 @@ from PIL import Image
 import pytesseract
 
 
-def ocr(img):
+def ocr(img, bw_degree=1):
     """
     接受一个image对象，返回识别的字符
     """
     gray = img.convert('L')  # 灰度化
-    bw = gray.point(lambda x: 0 if x < 1 else 255, '1')  # 阈值化
+    bw = gray.point(lambda x: 0 if x < bw_degree else 255, '1')  # 阈值化
     word = pytesseract.image_to_string(bw)
     ascii_word = ''.join(c for c in word if c in string.letters).lower()  # 小写字母
     return ascii_word
